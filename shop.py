@@ -22,6 +22,15 @@ driver.find_element_by_xpath("//a[contains(text(), 'Shop')]").click()
 
 
 
+# Отображение страницы товара
+# нажать на книгу HTML5 Forms
+driver.find_element_by_xpath("//h3[contains(text(), 'HTML5 Forms')]").click()
+# проверить, что заголовок книги называется HTML5 Forms
+book_name = driver.find_element_by_css_selector(".product_title[itemprop='name']").text
+assert book_name == "HTML5 Forms"
+
+
+
 # Проверка количества товаров в категории
 # открыть категорию HTML
 driver.find_element_by_xpath("//a[contains(text(), 'HTML')]").click()
@@ -57,7 +66,7 @@ assert new_price == "₹450.00"
 # открыть обложку книги в предпросмотре - не получилось
 # Я знаю, что можно принудительно изменить разрешение экрана на то, для которого будет показана картинка в меньшем
 # разрешении, но мне это кажется неправильным вариантом.
-# Я попытался с помощью скрипта применить значение для мальнького разрешения к атрибуту srcset, но это не дало эффекта
+# Я попытался с помощью скрипта применить значение для маленького разрешения к атрибуту srcset, но это не дало эффекта
 preview = driver.find_element_by_css_selector(".images > a > img")
 driver.execute_script("arguments[0].srcset='http://practice.automationtesting.in/wp-content/uploads/2017/01/Android-Quick-Start-Guide-180x180.png';", preview)
 preview.click()
@@ -68,7 +77,7 @@ WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, "pp_c
 
 
 # Проверка цены в корзине
-# добавлеие книги "HTML5 WebApp Development" в корзину
+# добавление книги "HTML5 WebApp Development" в корзину
 WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".button[data-product_id='182']"))).click()
 # проверка, что возле иконки корзины указано количество товара "1 item"
 # Если не установить ожидание, то текст считывается до того, как успеет обновиться
@@ -104,7 +113,7 @@ time.sleep(3)
 driver.find_elements_by_class_name("remove")[0].click()
 # нажать Undo
 WebDriverWait(driver, 25).until(EC.element_to_be_clickable((By.LINK_TEXT, "Undo?"))).click()
-# В Quantity увеличить количесто товара до 3 шт для "JS Data Structures and Algorithm"
+# В Quantity увеличить количество товара до 3 шт для "JS Data Structures and Algorithm"
 qty = driver.find_element_by_css_selector("tr:nth-child(2)>td>div>input")
 qty.clear()
 qty.send_keys("3")
@@ -127,7 +136,7 @@ assert ent_coupon == True
 driver.find_element_by_xpath("//a[contains(text(), 'Shop')]").click()
 # скролл вниз на 300 пикселей
 driver.execute_script("window.scrollBy(0, 300);")
-# добавлеие книги "HTML5 WebApp Development" в корзину
+# добавление книги "HTML5 WebApp Development" в корзину
 time.sleep(3)
 WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".button[data-product_id='182']"))).click()
 # переход в корзину
