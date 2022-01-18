@@ -13,12 +13,12 @@ import time
 # открыть http://practice.automationtesting.in/
 driver.get("http://practice.automationtesting.in/")
 # логин в систему
-driver.find_element_by_xpath("//a[contains(text(), 'My Account')]").click()
+driver.find_element_by_link_text("My Account").click()
 driver.find_element_by_id("username").send_keys("1@1.com")
 driver.find_element_by_id("password").send_keys("Ab<>123&456!=cD")
 driver.find_element_by_name("login").click()
 # нажать на вкладку Shop
-driver.find_element_by_xpath("//a[contains(text(), 'Shop')]").click()
+driver.find_element_by_link_text("Shop").click()
 
 
 
@@ -33,16 +33,19 @@ assert book_name == "HTML5 Forms"
 
 # Проверка количества товаров в категории
 # открыть категорию HTML
-driver.find_element_by_xpath("//a[contains(text(), 'HTML')]").click()
-# проверка, что отображается три товара
-items_count = driver.find_elements_by_class_name("woocommerce-LoopProduct-link")
-assert len(items_count) == 3
+driver.find_element_by_link_text("HTML").click()
+# проверка, что в категории отображается три товара
+items_count = driver.find_elements_by_css_selector("a>h3")
+if len(items_count) == 3:
+    print("\nOK: d категории 3 товара")
+else:
+    print("\nError: количество товаров в категории: " + str(len(items_count)))
 
 
 
 # Сортировка товаров
 # проверка, что в селекторе выбран вариант сортировки по умолчанию
-sort = Select(driver.find_element_by_css_selector("select.orderby"))
+sort = Select(driver.find_element_by_name("orderby"))
 sort_text = sort.first_selected_option.text
 assert sort_text == "Default sorting"
 # выбор сортировки: по цене, от большей к меньшей
@@ -63,14 +66,8 @@ assert old_price == "₹600.00"
 # проверка, что содержимое новой цены = ₹450.00
 new_price = driver.find_element_by_css_selector(".price > ins > span").text
 assert new_price == "₹450.00"
-# открыть обложку книги в предпросмотре - не получилось
-# Я знаю, что можно принудительно изменить разрешение экрана на то, для которого будет показана картинка в меньшем
-# разрешении, но мне это кажется неправильным вариантом.
-# Я попытался с помощью скрипта применить значение для маленького разрешения к атрибуту srcset, но это не дало эффекта
-preview = driver.find_element_by_css_selector(".images > a > img")
-driver.execute_script("arguments[0].srcset='http://practice.automationtesting.in/wp-content/uploads/2017/01/Android-Quick-Start-Guide-180x180.png';", preview)
-preview.click()
-######WebDriverWait(driver, 10).until(EC.text_to_be_present_in_element_value(((By.CSS_SELECTOR, ".images > a > img"), 'srcset', "http://practice.automationtesting.in/wp-content/uploads/2017/01/Android-Quick-Start-Guide-180x180.png"))).click()
+# открыть обложку книги
+driver.find_element_by_css_selector(".images > a > img").click()
 # закрыть окно предпросмотра
 WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.CLASS_NAME, "pp_close"))).click()
 
@@ -137,6 +134,7 @@ driver.find_element_by_xpath("//a[contains(text(), 'Shop')]").click()
 # скролл вниз на 300 пикселей
 driver.execute_script("window.scrollBy(0, 300);")
 # добавление книги "HTML5 WebApp Development" в корзину
+# не работает без time. Возможно, именно сейчас, в момент написания теста, есть какие-то задержки на сайте
 time.sleep(3)
 WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, ".button[data-product_id='182']"))).click()
 # переход в корзину
@@ -148,22 +146,22 @@ WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CLASS_NAME, "chec
 # заполнение обязательных полей
 WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "billing_first_name"))).send_keys("Amayak")
 driver.find_element_by_id("billing_last_name").send_keys("Akopyan")
-email = driver.find_element_by_id("billing_email")
-email.clear()
-email.send_keys("1@1.com")
+driver.find_element_by_id("billing_email").send_keys("1@1.com")
 driver.find_element_by_id("billing_phone").send_keys("2323232323")
+# элемент выбора страны - не стандартный dropdown
 driver.find_element_by_id("s2id_billing_country").click()
 driver.find_element_by_id("s2id_autogen1_search").send_keys("Denmark")
 ActionChains(driver).move_by_offset(0, 30).click().perform()
 driver.find_element_by_id("billing_address_1").send_keys("Red Square, 1")
 driver.find_element_by_id("billing_city").send_keys("Moscow")
+# для полей Postcode и State нужно ожидание
 postcode = WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.XPATH, "//p[@id='billing_postcode_field']/input")))
 postcode.clear()
 postcode.send_keys("109012")
 town = WebDriverWait(driver, 20).until(EC.visibility_of_element_located((By.ID, "billing_state")))
 town.clear()
 town.send_keys("Moscow")
-# выбор способа оплаты
+# выбор способа оплаты: по чеку
 driver.execute_script("window.scrollBy(0, 600);")
 time.sleep(2)
 driver.find_element_by_id("payment_method_cheque").click()

@@ -4,13 +4,14 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains
 driver = webdriver.Chrome()
 driver.maximize_window()
 
 # открыть http://practice.automationtesting.in/
 driver.get("http://practice.automationtesting.in/")
 # нажать на My Account
-driver.find_element_by_xpath("//a[contains(text(), 'My Account')]").click()
+driver.find_element_by_link_text("My Account").click()
 
 
 
@@ -21,7 +22,7 @@ driver.find_element_by_id("reg_password").send_keys("Ab<>123&456!=cD")
 # нажать на Register: для валидации данных функционал сайта требует после заполнения полей
 # сначала кликнуть в любое место кроме кнопки Register и сделать это не моментально
 time.sleep(5)
-driver.find_element_by_xpath("//h2[contains(text(), 'Register')]").click()
+ActionChains(driver).move_by_offset(100, 100).click().perform()
 driver.find_element_by_name("register").click()
 
 
